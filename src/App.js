@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Card from "./components/Card";
+import Navigation from "./components/Navigation";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  state = {
+    data: [],
+  };
+  foodRef = React.createRef();
+
+  getData = async () => {
+    const res = await fetch("data.json");
+    const data = await res.json();
+    console.log(data);
+    this.setState({ data: data });
+  };
+  componentDidMount() {
+    this.getData();
+  }
+  // click previous arrow
+  prevClick = () => {
+    const slide = this.foodRef.current;
+    slide.scrollLeft -= slide.offsetWidth;
+    if (slide.scrollLeft <= 0) {
+      slide.scrollLeft = slide.scrollWidth;
+    }
+  };
+  // click next arrow
+  nextClick = () => {
+    const slide = this.foodRef.current;
+    slide.scrollLeft += slide.offsetWidth;
+    if (slide.scrollLeft >= slide.scrollWidth - slide.offsetWidth) {
+      slide.scrollLeft = 0;
+    }
+  };
+  render() {
+    const { data } = this.state;
+    return (
+      <div className="wrapper">
+        <div className="app" ref={this.foodRef}>
+          <Card data={data} />
+        </div>
+        <Navigation prev={this.prevClick} next={this.nextClick} />
+      </div>
+    );
+  }
 }
 
 export default App;
